@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedala+ | Bike Sharing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+        }
+        
+        .auth-container {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .bike-marker {
+            background: #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .bike-marker:hover {
+            transform: scale(1.1);
+        }
+        
+        .user-marker {
+            background: #2196F3;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .bike-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        
+        .bike-list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .bike-list-container::-webkit-scrollbar-thumb {
+            background-color: #4CAF50;
+            border-radius: 3px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .rental-active {
+            animation: pulse 2s infinite;
+            border: 2px solid #4CAF50;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <!-- Login Container -->
+    <div id="login-container" class="min-h-screen flex items-center justify-center p-4">
+        <div class="auth-container rounded-lg shadow-xl p-8 w-full max-w-md animate__animated animate__fadeIn">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Pedala+</h2>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <input type="email" id="login-email" placeholder="Email" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                </div>
+                <div>
+                    <input type="password" id="login-password" placeholder="Senha" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                </div>
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-all font-semibold">
+                    Entrar
+                </button>
+            </form>
+            <p class="text-center mt-6">
+                <a href="#" id="register-link" class="text-blue-500 hover:text-blue-700 transition-all">Criar uma conta</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Registration Container -->
+    <div id="register-container" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="auth-container rounded-lg shadow-xl p-8 w-full max-w-md animate__animated animate__fadeIn">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Criar Conta</h2>
+            <form id="register-form" class="space-y-4">
+                <input type="text" id="register-name" placeholder="Nome completo" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <input type="email" id="register-email" placeholder="Email" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <input type="password" id="register-password" placeholder="Senha" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <input type="password" id="confirm-password" placeholder="Confirmar senha" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <input type="tel" id="register-phone" placeholder="Telefone" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <input type="text" id="register-cpf" placeholder="CPF" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all">
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-all font-semibold">
+                    Registrar
+                </button>
+            </form>
+            <p class="text-center mt-6">
+                <a href="#" id="login-link" class="text-blue-500 hover:text-blue-700 transition-all">Já tem uma conta? Entrar</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div id="dashboard-container" class="hidden min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <a href="#" class="text-2xl font-bold text-green-500">Pedala+</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-4">
+                            <button id="ranking-btn" class="nav-link text-gray-600 hover:text-green-500 transition-all">
+                                Ranking
+                            </button>
+                            <a href="#" id="profile-link" class="nav-link text-gray-600 hover:text-green-500 transition-all">
+                                Perfil
+                            </a>
+                            <span id="user-points" class="px-3 py-1 bg-green-100 text-green-800 rounded-full font-semibold"></span>
+                            <span id="user-name" class="text-gray-600"></span>
+                            <button id="logout-btn" class="btn btn-danger">Sair</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+       <!-- Main Content -->
+       <div id="ranking-container" class="hidden max-w-7xl mx-auto px-4 mt-4"></div>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Map Section -->
+        <div class="lg:col-span-2">
+            <div id="map" class="w-full"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Nearby Bikes -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4">Bicicletas Próximas</h3>
+                <div id="bike-list" class="bike-list-container space-y-4"></div>
+            </div>
+
+            <!-- Rental History -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4">Meus Aluguéis</h3>
+                <div id="rental-history" class="space-y-4"></div>
+            </div>
+
+            <!-- Scheduled Rides -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold mb-4">Passeios Agendados</h3>
+                <div id="scheduled-rides-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Ranking Section -->
+            <div id="user-ranking-container" class="hidden mt-8 bg-white rounded-lg shadow-lg p-6">
+                <!-- Ranking will be injected here by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Profile Container -->
+    <div id="profile-container" class="hidden min-h-screen bg-gray-100 py-12">
+        <div class="max-w-2xl mx-auto px-4">
+            <div class="bg-white rounded-lg shadow-xl p-8">
+                <h2 class="text-2xl font-bold mb-8">Meu Perfil</h2>
+                <form id="profile-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+                            <input type="text" id="profile-name" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="profile-email" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                            <input type="tel" id="profile-phone" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">CPF</label>
+                            <input type="text" id="profile-cpf" class="w-full px-4 py-3 rounded-lg border focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" readonly>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" id="back-to-dashboard" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all">
+                            Voltar
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html>

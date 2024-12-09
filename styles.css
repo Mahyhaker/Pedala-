@@ -1,0 +1,222 @@
+:root {
+    --primary-color: #2ecc71;
+    --primary-dark: #27ae60;
+    --secondary-color: #3498db;
+    --background-color: #f8f9fa;
+    --text-color: #2c3e50;
+    --danger-color: #e74c3c;
+    --success-color: #27ae60;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Authentication Container Styles */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.auth-container .card {
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.auth-container .card-body {
+    padding: 2rem;
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    transition: var(--transition-speed);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: var(--transition-speed);
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* Dashboard Styles */
+.navbar {
+    padding: 1rem;
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+}
+
+#map {
+    height: 600px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+}
+
+/* Map Markers */
+.user-marker {
+    width: 20px;
+    height: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.bike-marker {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Bike and Rental Items */
+.bike-item, .rental-item {
+    border-radius: 10px;
+    border: none;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-speed);
+    background-color: white;
+}
+
+.bike-item:hover, .rental-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.bike-item .card-body, .rental-item .card-body {
+    padding: 1.25rem;
+}
+
+/* Profile Container */
+#profile-container .card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: var(--card-shadow);
+}
+
+/* Points Display */
+#user-points {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #map {
+        height: 400px;
+    }
+    
+    .auth-container .card {
+        margin: 15px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+    }
+}
+
+/* Popup Styles */
+.bike-popup {
+    text-align: center;
+    padding: 5px;
+}
+
+.bike-popup .btn {
+    margin-top: 10px;
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+.ride-marker {
+    background-color: #9b59b6;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ride-item {
+    border-radius: 10px;
+    border: none;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-speed);
+    background-color: white;
+}
+
+.ride-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ride-popup {
+    text-align: center;
+    padding: 5px;
+}
+
+.ride-popup .btn {
+    margin-top: 10px;
+}
